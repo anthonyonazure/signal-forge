@@ -22,7 +22,7 @@ describe('locate', () => {
     const source = 'The audit  testing\n  identified\tmisclassified expenses across the period.';
     const result = locate(SIG, source, 0);
     expect(result).not.toBeNull();
-    expect(['fuzzy', 'substring']).toContain(result!.matchQuality);
+    expect(result!.matchQuality).toBe('fuzzy');
   });
 
   it('returns null for unfindable text', () => {
@@ -38,7 +38,7 @@ describe('locate', () => {
     expect(result!.span.start).toBeGreaterThanOrEqual(1000);
   });
 
-  it('substring fallback matches when 60-char prefix is exact in source', () => {
+  it('rejects hallucinated text that only matches a short prefix', () => {
     const sig: Signal = {
       type: 'finding',
       text: 'In Q3 the auditors documented three control weaknesses with substantial follow-up impact described in the appendix',
@@ -47,7 +47,6 @@ describe('locate', () => {
     };
     const source = 'In Q3 the auditors documented three control weaknesses with material risk that may require remediation.';
     const result = locate(sig, source, 0);
-    expect(result).not.toBeNull();
-    expect(result!.matchQuality).toBe('substring');
+    expect(result).toBeNull();
   });
 });

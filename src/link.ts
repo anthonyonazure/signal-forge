@@ -15,23 +15,22 @@ export function locate(signal: Signal, source: string, chunkOffset: number): Loc
   const normalizedHit = normalizedSource.indexOf(normalizedTarget);
   if (normalizedHit !== -1) {
     const span = mapNormalizedSpan(source, normalizedSource, normalizedHit, normalizedTarget.length);
-    if (span) {
+    if (span && verifyFuzzy(source, span, signal.text)) {
       return { ...signal, span: shift(span, chunkOffset), matchQuality: 'fuzzy' };
     }
   }
 
-  const head = signal.text.slice(0, Math.min(60, signal.text.length));
-  const headHit = source.indexOf(head);
-  if (headHit !== -1) {
-    const tailGuess = Math.min(headHit + signal.text.length + 40, source.length);
-    return {
-      ...signal,
-      span: shift({ start: headHit, end: tailGuess }, chunkOffset),
-      matchQuality: 'substring',
-    };
-  }
-
   return null;
+}
+
+function verifyFuzzy(source: string, span: Span, target: string): boolean {
+  const sliced = source.slice(span.start, span.end);
+  const a = normalize(sliced);
+  const b = normalize(target);
+  if (a === b) return true;
+  if (a.length === 0 || b.length === 0) return false;
+  const ratio = Math.min(a.length, b.length) / Math.max(a.length, b.length);
+  return ratio >= 0.95;
 }
 
 function normalize(s: string): string {

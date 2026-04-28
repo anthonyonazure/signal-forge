@@ -3,6 +3,7 @@ import { chunk } from './chunk.js';
 import { extractFromChunk } from './extract.js';
 import { locate } from './link.js';
 import { dedupe } from './dedupe.js';
+import { sanitizeSignal } from './sanitize.js';
 import type { ExtractionResult, LocatedSignal, Signal } from './types.js';
 
 export interface PipelineOptions {
@@ -29,7 +30,8 @@ export async function extract(
   let totalExtracted = 0;
 
   for (const c of chunks) {
-    const signals = await extractFromChunk(c, { client, model });
+    const rawSignals = await extractFromChunk(c, { client, model });
+    const signals = rawSignals.map(sanitizeSignal);
     totalExtracted += signals.length;
 
     for (const signal of signals) {

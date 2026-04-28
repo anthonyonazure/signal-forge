@@ -15,7 +15,7 @@ export interface Signal {
 
 export interface LocatedSignal extends Signal {
   span: Span;
-  matchQuality: 'exact' | 'fuzzy' | 'substring';
+  matchQuality: 'exact' | 'fuzzy';
 }
 
 export interface ExtractionResult {

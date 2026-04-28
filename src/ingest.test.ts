@@ -51,8 +51,27 @@ describe('ingest', () => {
   });
 
   it('throws on unsupported types', async () => {
-    await expect(ingest('/tmp/unknown.docx')).rejects.toThrow(/Unsupported/);
+    const dir = await mkdtemp(join(tmpdir(), 'sf-'));
+    try {
+      const path = join(dir, 'unknown.docx');
+      await writeFile(path, 'x');
+      await expect(ingest(path)).rejects.toThrow(/Unsupported/);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
+
+  it('rejects oversized files before reading them', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'sf-'));
+    try {
+      const path = join(dir, 'huge.txt');
+      const buf = Buffer.alloc(60 * 1024 * 1024, 'x');
+      await writeFile(path, buf);
+      await expect(ingest(path)).rejects.toThrow(/max/i);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  }, 30_000);
 });
 
 describe('normalize', () => {
