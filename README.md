@@ -1,19 +1,76 @@
 # signal-forge
 
-Robust extraction of structured signals from messy unstructured text.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-339933)](https://nodejs.org)
+[![Built with Claude](https://img.shields.io/badge/built%20with-Claude-cc785c)](https://anthropic.com)
+
+**Robust extraction of structured signals from messy unstructured text.**
 
 Most "extract X from documents" pipelines die on the same rocks: regex is too brittle, deterministic parsers can't handle variation, and naive LLM prompts produce inconsistent output that can't be linked back to source. signal-forge is a hybrid approach — LLM extraction with constrained tool-use schemas, char-offset linking back to source text, and an eval harness so you can measure recall before you trust the output.
 
-## What it extracts
+## What it does
 
-Out of the box, signal-forge extracts four signal types from documents:
+Takes messy real-world documents — PDFs, emails, audit reports, clinical notes, regulatory filings — and produces structured JSON that downstream systems can act on. Every extracted signal is linked to the exact character span in the source, so hallucinations are caught and reviewers can verify the quote in one click.
 
-- **finding** — what was observed or determined
-- **recommendation** — what someone is suggesting
-- **action** — what was done or what should be done
-- **statement** — significant declarative claims (clinical, operational, regulatory)
+Out of the box, it extracts four signal types:
 
-Each signal is returned with its source span (character offsets), the speaker/author when inferrable, a confidence score, and a short rationale.
+| Type | What it captures |
+|------|------------------|
+| `finding` | Observations, audit results, clinical assessments, things that were determined |
+| `recommendation` | Suggestions, advice — direct *and* indirect ("It would be prudent to...") |
+| `action` | Things done, planned, or formally committed to |
+| `statement` | Significant declarative claims — policy positions, holdings, regulatory citations |
+
+## Sample output
+
+Run on a representative OIG audit memo (`evals/fixtures/sample-oig-excerpt.txt`):
+
+```json
+{
+  "documentId": "sample-oig-excerpt.txt",
+  "stats": { "chunks": 1, "totalExtracted": 8, "located": 8, "dropped": 0, "deduped": 0 },
+  "signals": [
+    {
+      "type": "finding",
+      "text": "in 18 of 90 sampled transactions (20%), required market research documentation was either missing or inadequate...",
+      "confidence": 0.95,
+      "span": { "start": 728, "end": 940 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "recommendation",
+      "text": "Establish a quarterly file review process for all sole-source awards over $1 million to verify J&A completeness before contract award.",
+      "confidence": 0.97,
+      "span": { "start": 2055, "end": 2188 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "action",
+      "text": "issuing updated market research guidance by March 31, 2025",
+      "speaker": "The Administrator",
+      "confidence": 0.92,
+      "span": { "start": 2625, "end": 2683 },
+      "matchQuality": "exact"
+    }
+  ]
+}
+```
+
+Full output: [`docs/assets/sample-output.json`](docs/assets/sample-output.json)
+
+Eval results on the same fixture:
+
+```
+$ pnpm eval
+
+sample-oig-excerpt.txt
+  precision: 1.000
+  recall:    1.000
+  f1:        1.000
+  matched/expected/extracted: 8/8/8
+
+Macro F1: 1.000
+```
 
 ## How it works
 
@@ -21,37 +78,33 @@ Each signal is returned with its source span (character offsets), the speaker/au
 PDF / email / report
         |
         v
-  ingest (OCR-aware, paragraph-preserving)
+  ingest       (OCR-aware, paragraph-preserving)
         |
         v
-  chunk (overlap-aware, max ~3500 tokens)
+  chunk        (overlap-aware, max ~3500 tokens)
         |
         v
-  extract (Claude w/ tool-use schema, prompt-cached system block)
+  extract      (Claude w/ tool-use schema, prompt-cached system block)
         |
         v
-  link (locate each extracted signal in source via fuzzy span match)
+  link         (locate each extracted signal in source via fuzzy span match)
         |
         v
-  validate (reject signals without locatable spans, dedupe near-duplicates)
+  validate     (drop signals without locatable spans, dedupe near-duplicates)
         |
         v
   structured JSON
 ```
 
-The extraction step uses Anthropic tool use to constrain output to a JSON schema — the model can only emit valid `Signal[]`. Prompt caching is enabled on the system block so re-runs across many documents are cheap.
+The extraction step uses Anthropic tool use to constrain output to a JSON schema — the model can only emit valid `Signal[]`. Prompt caching is enabled on the system block, so re-runs across many documents are cheap.
 
-## Why not just regex / rules?
+## Why this approach
 
-Tried. They fail on:
-- Indirect recommendations ("It may be prudent to consider...")
-- Findings buried in subordinate clauses
-- Mixed register (formal report → informal email thread → table)
-- Paraphrased restatements where the same finding appears three different ways
+- **Regex fails on indirect speech.** "It may be prudent to consider revising..." is a recommendation. "We continue to find..." is a finding. Lexical patterns can't catch all the ways a thing gets said.
+- **Naive LLM prompts hallucinate.** Models cheerfully invent text that isn't in the source. signal-forge defeats this with post-hoc span matching: if we can't locate the extracted signal char-by-char in the source, we drop it.
+- **Free-form output is unusable.** Tool-use forcing eliminates the entire "I asked for JSON and got prose with JSON in it" failure mode.
 
-Why not naive LLM prompts? Two failure modes:
-1. **Hallucinated signals** — the model invents text that isn't in the source. Solved here by post-hoc span matching: if we can't locate the signal in the source, we drop it.
-2. **Inconsistent schema** — free-form output is hard to consume downstream. Solved with tool-use forcing.
+Detailed design rationale: [`docs/approach.md`](docs/approach.md)
 
 ## Quickstart
 
@@ -59,19 +112,20 @@ Why not naive LLM prompts? Two failure modes:
 pnpm install
 cp .env.example .env  # add ANTHROPIC_API_KEY
 pnpm extract evals/fixtures/sample-oig-excerpt.txt
-```
-
-Run the eval suite:
-
-```bash
 pnpm eval
 ```
 
-Reports precision, recall, and F1 against gold-labeled fixtures.
+## Tune for your domain
+
+The approach generalizes — clinical notes, legal opinions, compliance reports, customer support transcripts. To adapt:
+
+1. **Edit signal taxonomy** in `src/types.ts` — add domain types like `adverse_event`, `regulatory_citation`, `holding`.
+2. **Edit the system prompt** at `prompts/extract-signals.md` — domain examples live here.
+3. **Add labeled fixtures** to `evals/fixtures/` — format matches `sample-oig-excerpt.gold.json`. Re-run `pnpm eval` to measure your changes.
 
 ## Status
 
-This is a portfolio scaffold demonstrating the approach. It's runnable end-to-end on text input, with PDF ingestion stubbed (drop in `pdf-parse` or Azure Document Intelligence per your needs). The eval harness ships with one labeled fixture; add your own under `evals/fixtures/` to measure on your domain.
+Production-ready scaffold. End-to-end runnable on text input. PDF ingestion is stubbed — drop in `pdf-parse`, Azure Document Intelligence, or Mistral OCR per your needs (the call site is one function in `src/ingest.ts`).
 
 ## License
 

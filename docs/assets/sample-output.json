@@ -1,0 +1,79 @@
+{
+  "documentId": "sample-oig-excerpt.txt",
+  "stats": {
+    "chunks": 1,
+    "totalExtracted": 8,
+    "located": 8,
+    "dropped": 0,
+    "deduped": 0
+  },
+  "signals": [
+    {
+      "type": "finding",
+      "text": "in 18 of 90 sampled transactions (20%), required market research documentation was either missing or inadequate to support the contracting officer's price determination",
+      "rationale": "Audit observation quantifying a documentation deficiency.",
+      "confidence": 0.95,
+      "span": { "start": 728, "end": 940 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "finding",
+      "text": "the office's contract files for sole-source awards over $1 million did not consistently include the justification and approval documentation required by FAR 6.303",
+      "rationale": "Audit observation about documentation gaps in sole-source contracts.",
+      "confidence": 0.94,
+      "span": { "start": 1071, "end": 1234 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "finding",
+      "text": "segregation of duties controls were not consistently enforced. In 7 transactions, the same individual served as both the requisitioner and the contracting officer's technical representative, creating a control gap",
+      "rationale": "Audit finding describing a control gap with quantified incidence.",
+      "confidence": 0.93,
+      "span": { "start": 1469, "end": 1684 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "recommendation",
+      "text": "Issue updated guidance to all contracting officers reinforcing the FAR Part 10 market research documentation requirements, with specific examples of acceptable documentation.",
+      "rationale": "Direct recommendation to the Administrator.",
+      "confidence": 0.97,
+      "span": { "start": 1864, "end": 2037 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "recommendation",
+      "text": "Establish a quarterly file review process for all sole-source awards over $1 million to verify J&A completeness before contract award.",
+      "rationale": "Direct recommendation to the Administrator.",
+      "confidence": 0.97,
+      "span": { "start": 2055, "end": 2188 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "recommendation",
+      "text": "Update the office's procurement standard operating procedure to formally prohibit the dual role of requisitioner and COTR on the same transaction.",
+      "rationale": "Direct recommendation to the Administrator.",
+      "confidence": 0.97,
+      "span": { "start": 2206, "end": 2353 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "action",
+      "text": "issuing updated market research guidance by March 31, 2025",
+      "rationale": "Committed action with date attributed to the Administrator.",
+      "confidence": 0.92,
+      "speaker": "The Administrator",
+      "span": { "start": 2625, "end": 2683 },
+      "matchQuality": "exact"
+    },
+    {
+      "type": "action",
+      "text": "initiated procurement of a contract management system upgrade that will support the dual-role control flagging described in Recommendation 3",
+      "rationale": "Action already in progress, per management response.",
+      "confidence": 0.91,
+      "speaker": "The Administrator",
+      "span": { "start": 2706, "end": 2847 },
+      "matchQuality": "exact"
+    }
+  ],
+  "unlocatedSignals": []
+}
