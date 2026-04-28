@@ -28,35 +28,31 @@ Run on a representative OIG audit memo (`evals/fixtures/sample-oig-excerpt.txt`)
 ```json
 {
   "documentId": "sample-oig-excerpt.txt",
-  "stats": { "chunks": 1, "totalExtracted": 8, "located": 8, "dropped": 0, "deduped": 0 },
+  "stats": { "chunks": 1, "totalExtracted": 12, "located": 12, "dropped": 0, "deduped": 0 },
   "signals": [
     {
       "type": "finding",
-      "text": "in 18 of 90 sampled transactions (20%), required market research documentation was either missing or inadequate...",
-      "confidence": 0.95,
-      "span": { "start": 728, "end": 940 },
+      "text": "in 18 of 90 sampled transactions (20%), required market research documentation was either missing or inadequate to support the contracting officer's price determination...",
+      "confidence": 0.97,
       "matchQuality": "exact"
     },
     {
       "type": "recommendation",
-      "text": "Establish a quarterly file review process for all sole-source awards over $1 million to verify J&A completeness before contract award.",
-      "confidence": 0.97,
-      "span": { "start": 2055, "end": 2188 },
+      "text": "Recommendation 2: Establish a quarterly file review process for all sole-source awards over $1 million to verify J&A completeness before contract award.",
+      "confidence": 0.99,
       "matchQuality": "exact"
     },
     {
       "type": "action",
-      "text": "issuing updated market research guidance by March 31, 2025",
-      "speaker": "The Administrator",
-      "confidence": 0.92,
-      "span": { "start": 2625, "end": 2683 },
+      "text": "The office has committed to issuing updated market research guidance by March 31, 2025",
+      "confidence": 0.99,
       "matchQuality": "exact"
     }
   ]
 }
 ```
 
-Full output: [`docs/assets/sample-output.json`](docs/assets/sample-output.json)
+Full output (12 signals, all exact-matched to source spans): [`docs/assets/sample-output.json`](docs/assets/sample-output.json)
 
 Eval results on the same fixture:
 
@@ -64,13 +60,15 @@ Eval results on the same fixture:
 $ pnpm eval
 
 sample-oig-excerpt.txt
-  precision: 1.000
+  precision: 0.727
   recall:    1.000
-  f1:        1.000
-  matched/expected/extracted: 8/8/8
+  f1:        0.842
+  matched/expected/extracted: 8/8/11
 
-Macro F1: 1.000
+Macro F1: 0.842
 ```
+
+Recall is perfect — every gold-labeled signal was found. Precision is 0.727 because the model also extracted three additional signals not in the gold set (e.g., the OIG's own follow-up commitment, the Administrator's concurrence, and a header-level "three significant deficiencies" finding). Whether to call those false positives or under-labeled gold depends on your downstream use case — for a triage queue, the extras are useful; for strict matching, you'd tighten the gold set or filter on confidence.
 
 ## How it works
 

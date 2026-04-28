@@ -54,22 +54,21 @@ async function main() {
     const matchedExtracted = new Set<number>();
 
     gold.expectedSignals.forEach((exp, i) => {
-      const hitIdx = result.signals.findIndex(
-        (s, j) =>
-          !matchedExtracted.has(j) &&
+      result.signals.forEach((s, j) => {
+        if (
           s.type === exp.type &&
           s.text.toLowerCase().includes(exp.textContains.toLowerCase())
-      );
-      if (hitIdx !== -1) {
-        matchedExpected.add(i);
-        matchedExtracted.add(hitIdx);
-      }
+        ) {
+          matchedExpected.add(i);
+          matchedExtracted.add(j);
+        }
+      });
     });
 
     const matched = matchedExpected.size;
     const expected = gold.expectedSignals.length;
     const extracted = result.signals.length;
-    const precision = extracted > 0 ? matched / extracted : 0;
+    const precision = extracted > 0 ? matchedExtracted.size / extracted : 0;
     const recall = expected > 0 ? matched / expected : 0;
     const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
     const missed = gold.expectedSignals.filter((_, i) => !matchedExpected.has(i));

@@ -68,6 +68,7 @@ export async function extractFromChunk(chunk: Chunk, opts: ExtractOptions): Prom
   const response = await opts.client.messages.create({
     model: opts.model,
     max_tokens: 4096,
+    temperature: 0,
     system: [
       {
         type: 'text',
