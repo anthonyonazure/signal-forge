@@ -1,5 +1,6 @@
 # signal-forge
 
+[![CI](https://github.com/anthonyonazure/signal-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/anthonyonazure/signal-forge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-339933)](https://nodejs.org)
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude-cc785c)](https://anthropic.com)
@@ -113,6 +114,14 @@ pnpm extract evals/fixtures/sample-oig-excerpt.txt
 pnpm eval
 ```
 
+## Supported inputs
+
+| Format | Library | Status |
+|--------|---------|--------|
+| `.txt`, `.md` | builtin | direct |
+| `.pdf` | `pdf-parse` | text-based PDFs work out of box; for scans, swap in OCR via `src/ingest.ts` |
+| `.eml` | `mailparser` | headers + body, HTML stripped |
+
 ## Tune for your domain
 
 The approach generalizes — clinical notes, legal opinions, compliance reports, customer support transcripts. To adapt:
@@ -121,9 +130,17 @@ The approach generalizes — clinical notes, legal opinions, compliance reports,
 2. **Edit the system prompt** at `prompts/extract-signals.md` — domain examples live here.
 3. **Add labeled fixtures** to `evals/fixtures/` — format matches `sample-oig-excerpt.gold.json`. Re-run `pnpm eval` to measure your changes.
 
-## Status
+## Tests
 
-Production-ready scaffold. End-to-end runnable on text input. PDF ingestion is stubbed — drop in `pdf-parse`, Azure Document Intelligence, or Mistral OCR per your needs (the call site is one function in `src/ingest.ts`).
+24 unit tests cover chunking, source span linking, dedupe, and ingest for every supported format. Runs in CI on every push and pull request.
+
+```bash
+pnpm test         # run once
+pnpm test:watch   # watch mode
+pnpm typecheck    # tsc --noEmit
+```
+
+The eval suite (`pnpm eval`) hits the Anthropic API and is **not** run in CI to avoid burning credits on every commit. Run locally to verify changes to extraction logic or prompts.
 
 ## License
 
