@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>signal-forge — live demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>signal-forge</h1>
+        <p>Paste any document. Get back structured signals — findings, recommendations, actions — each linked to the exact source span.</p>
+        <p class="links">
+          <a href="https://github.com/anthonyonazure/signal-forge" target="_blank" rel="noopener">GitHub →</a>
+          &nbsp;·&nbsp;
+          <a href="https://github.com/anthonyonazure/signal-forge/blob/main/docs/approach.md" target="_blank" rel="noopener">Approach doc →</a>
+        </p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="demo">
+        <label for="text">Document text</label>
+        <textarea id="text" rows="14" placeholder="Paste an audit memo, clinical note, regulatory filing, contract excerpt..."></textarea>
+        <div class="actions">
+          <button id="submit">Extract signals</button>
+          <button id="example" class="secondary">Load example (OIG audit memo)</button>
+          <span id="status"></span>
+        </div>
+      </section>
+
+      <section id="results" class="results hidden">
+        <h2>Signals</h2>
+        <div id="stats"></div>
+        <ul id="signal-list"></ul>
+      </section>
+
+      <section class="footer">
+        <p>This demo runs the same pipeline as the CLI: chunk → constrained Claude tool-use → fuzzy span linking → dedupe. Source text is capped at 12,000 characters here. Limited to ~30 requests/hour total to control demo cost.</p>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
