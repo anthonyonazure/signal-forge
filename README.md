@@ -7,7 +7,9 @@
 
 **Robust extraction of structured signals from messy unstructured text.**
 
-> **Try it live →** _(demo URL — paste a document, see signals + spans)_  ·  **Watch a 90-second walkthrough →** _(Loom)_
+![signal-forge demo](docs/assets/demo.gif)
+
+> **Try it live →** _(demo URL — paste a document, see signals + spans)_
 
 Most "extract X from documents" pipelines die on the same rocks: regex is too brittle, deterministic parsers can't handle variation, and naive LLM prompts produce inconsistent output that can't be linked back to source. signal-forge is a hybrid approach — LLM extraction with constrained tool-use schemas, char-offset linking back to source text, and an eval harness so you can measure recall before you trust the output.
 
