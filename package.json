@@ -1,0 +1,25 @@
+{
+  "name": "signal-forge",
+  "version": "0.1.0",
+  "description": "Robust extraction of structured signals from messy unstructured text",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "extract": "tsx src/cli.ts",
+    "eval": "tsx evals/run.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

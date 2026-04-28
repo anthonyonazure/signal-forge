@@ -1,0 +1,37 @@
+{
+  "documentId": "sample-oig-excerpt.txt",
+  "expectedSignals": [
+    {
+      "type": "finding",
+      "textContains": "18 of 90 sampled transactions"
+    },
+    {
+      "type": "finding",
+      "textContains": "did not consistently include the justification and approval documentation"
+    },
+    {
+      "type": "finding",
+      "textContains": "segregation of duties controls were not consistently enforced"
+    },
+    {
+      "type": "recommendation",
+      "textContains": "Issue updated guidance to all contracting officers"
+    },
+    {
+      "type": "recommendation",
+      "textContains": "Establish a quarterly file review process"
+    },
+    {
+      "type": "recommendation",
+      "textContains": "formally prohibit the dual role of requisitioner and COTR"
+    },
+    {
+      "type": "action",
+      "textContains": "issuing updated market research guidance by March 31, 2025"
+    },
+    {
+      "type": "action",
+      "textContains": "initiated procurement of a contract management system upgrade"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+MEMORANDUM FOR THE ADMINISTRATOR
+
+FROM: Office of Inspector General
+SUBJECT: Review of Procurement Controls in the Regional Office, FY2024
+
+This memorandum transmits the results of our review of procurement controls at the Regional Office covering fiscal year 2024.
+
+Background
+
+The Regional Office processed approximately 1,400 procurement transactions during the review period, totaling $42.8 million. We selected a stratified sample of 90 transactions for testing, including all transactions over $250,000 and a random sample below that threshold.
+
+Findings
+
+Our testing identified three significant deficiencies in the procurement process.
+
+First, in 18 of 90 sampled transactions (20%), required market research documentation was either missing or inadequate to support the contracting officer's price determination. This represents a material weakness in the office's compliance with FAR Part 10.
+
+Second, the office's contract files for sole-source awards over $1 million did not consistently include the justification and approval documentation required by FAR 6.303. Of 12 sole-source awards reviewed, four lacked complete J&A documentation, and an additional two contained J&A documents that did not address all required elements.
+
+Third, segregation of duties controls were not consistently enforced. In 7 transactions, the same individual served as both the requisitioner and the contracting officer's technical representative, creating a control gap that elevates the risk of undetected error or fraud.
+
+Recommendations
+
+We recommend that the Administrator take the following actions:
+
+Recommendation 1: Issue updated guidance to all contracting officers reinforcing the FAR Part 10 market research documentation requirements, with specific examples of acceptable documentation.
+
+Recommendation 2: Establish a quarterly file review process for all sole-source awards over $1 million to verify J&A completeness before contract award.
+
+Recommendation 3: Update the office's procurement standard operating procedure to formally prohibit the dual role of requisitioner and COTR on the same transaction. The Administrator may also wish to consider implementing a system-level control in the procurement system that flags such conflicts.
+
+Management Response
+
+The Administrator concurred with all three recommendations. The office has committed to issuing updated market research guidance by March 31, 2025, and has already initiated procurement of a contract management system upgrade that will support the dual-role control flagging described in Recommendation 3.
+
+We will follow up on implementation status in our FY2025 review.
