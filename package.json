@@ -4,12 +4,15 @@
   "description": "Robust extraction of structured signals from messy unstructured text",
   "type": "module",
   "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "mutation": "stryker run",
+    "check": "bun run typecheck && bun run lint",
     "build": "tsc",
     "extract": "tsx src/cli.ts",
     "eval": "tsx evals/run.ts",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
@@ -18,11 +21,15 @@
     "pdf-parse": "1.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stryker-mutator/core": "^9.6.1",
     "@types/mailparser": "^3.4.4",
     "@types/node": "^22.0.0",
     "@types/pdf-parse": "^1.1.4",
+    "eslint": "^10.8.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
+    "typescript-eslint": "^8.65.0",
     "vitest": "^2.1.0"
   },
   "engines": {
