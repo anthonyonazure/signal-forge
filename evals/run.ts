@@ -3,7 +3,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { resolve, basename } from 'node:path';
 import { ingest, normalize } from '../src/ingest.js';
 import { extract } from '../src/pipeline.js';
-import type { LocatedSignal, SignalType } from '../src/types.js';
+import type { SignalType } from '../src/types.js';
 
 interface ExpectedSignal {
   type: SignalType;
@@ -45,7 +45,9 @@ async function main() {
 
     const raw = await ingest(sourcePath);
     const source = normalize(raw);
-    const gold: GoldFile = JSON.parse(await readFile(goldPath, 'utf8'));
+    // JSON.parse returns `any`; the assertion states the contract the gold
+    // fixtures are written to instead of letting `any` spread through the eval.
+    const gold = JSON.parse(await readFile(goldPath, 'utf8')) as GoldFile;
 
     console.error(`\n[eval] ${file} — extracting...`);
     const result = await extract(basename(file), source, { apiKey });
