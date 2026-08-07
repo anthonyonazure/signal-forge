@@ -1,4 +1,37 @@
-const $ = (id) => document.getElementById(id);
+/**
+ * @typedef {import('../src/types.js').ExtractionResult} ExtractionResult
+ * @typedef {import('../src/types.js').LocatedSignal} LocatedSignal
+ */
+
+/**
+ * @param {string} id
+ * @returns {HTMLElement}
+ */
+const $ = (id) => {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`missing element #${id}`);
+  return el;
+};
+
+/**
+ * @param {string} id
+ * @returns {HTMLButtonElement}
+ */
+const $button = (id) => {
+  const el = $(id);
+  if (!(el instanceof HTMLButtonElement)) throw new Error(`#${id} is not a button`);
+  return el;
+};
+
+/**
+ * @param {string} id
+ * @returns {HTMLTextAreaElement}
+ */
+const $textarea = (id) => {
+  const el = $(id);
+  if (!(el instanceof HTMLTextAreaElement)) throw new Error(`#${id} is not a textarea`);
+  return el;
+};
 
 const EXAMPLE_TEXT = `MEMORANDUM FOR THE ADMINISTRATOR
 
@@ -27,12 +60,18 @@ Management Response
 
 The Administrator concurred with all three recommendations. The office has committed to issuing updated market research guidance by March 31, 2025.`;
 
-$('example').addEventListener('click', () => {
-  $('text').value = EXAMPLE_TEXT;
+$button('example').addEventListener('click', () => {
+  $textarea('text').value = EXAMPLE_TEXT;
 });
 
-$('submit').addEventListener('click', async () => {
-  const text = $('text').value.trim();
+// addEventListener wants a void-returning listener, so the async work is a
+// named function the listener explicitly discards the promise of.
+$button('submit').addEventListener('click', () => {
+  void submitText();
+});
+
+async function submitText() {
+  const text = $textarea('text').value.trim();
   if (!text) {
     setStatus('Paste some text first.', true);
     return;
@@ -56,27 +95,37 @@ $('submit').addEventListener('click', async () => {
       const err = await res.text().catch(() => '');
       throw new Error(`HTTP ${res.status}${err ? `: ${err}` : ''}`);
     }
-    const data = await res.json();
+    // res.json() is `any`; parking it in `unknown` first and then naming the
+    // shape is what stops `any` spreading through render() and the status line.
+    /** @type {unknown} */
+    const payload = await res.json();
+    const data = /** @type {ExtractionResult & { elapsedMs: number }} */ (payload);
     render(data);
     setStatus(`Done in ${data.elapsedMs}ms.`);
   } catch (err) {
-    setStatus(`Error: ${err.message}`, true);
+    setStatus(`Error: ${err instanceof Error ? err.message : String(err)}`, true);
   } finally {
     setBusy(false);
   }
-});
-
-function setBusy(busy) {
-  $('submit').disabled = busy;
-  $('example').disabled = busy;
 }
 
+/** @param {boolean} busy */
+function setBusy(busy) {
+  $button('submit').disabled = busy;
+  $button('example').disabled = busy;
+}
+
+/**
+ * @param {string} msg
+ * @param {boolean} [isError]
+ */
 function setStatus(msg, isError = false) {
   const el = $('status');
   el.textContent = msg;
   el.classList.toggle('error', isError);
 }
 
+/** @param {ExtractionResult} result */
 function render(result) {
   const { signals, stats, unlocatedSignals } = result;
   $('results').classList.remove('hidden');
@@ -119,6 +168,9 @@ function render(result) {
   }
 }
 
+/** @param {string} s */
 function escape(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  /** @type {Record<string, string>} */
+  const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  return String(s).replace(/[&<>"']/g, (c) => entities[c] ?? c);
 }
