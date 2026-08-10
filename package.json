@@ -53,5 +53,8 @@
       "tsx": ">=4.22.0 <5",
       "vite": ">=6.4.3 <7"
     }
+  },
+  "gauntlet": {
+    "coverageFloorPercent": 91
   }
 }

@@ -4,6 +4,15 @@
   "commandRunner": {
     "command": "bun test"
   },
+  "mutate": [
+    "src/chunk.ts",
+    "src/dedupe.ts",
+    "src/extract.ts",
+    "src/ingest.ts",
+    "src/link.ts",
+    "src/sanitize.ts",
+    "src/types.ts"
+  ],
   "reporters": [
     "progress",
     "clear-text"
