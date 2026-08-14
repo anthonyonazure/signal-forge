@@ -15,7 +15,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.91.1",
+    "@anthropic-ai/sdk": "^0.116.0",
     "dotenv": "^16.4.5",
     "mailparser": "^3.9.15",
     "pdf-parse": "1.1.1"
